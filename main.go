@@ -1,12 +1,9 @@
 package main
 
 import (
-	"fmt"
 	"os"
 	"socket_chat_backend/repository"
 	"socket_chat_backend/types"
-
-	_ "github.com/lib/pq"
 
 	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
@@ -15,17 +12,19 @@ import (
 
 func main() {
 	// Setting a log JSON formatter for future use
-	logrus.SetFormatter(new(logrus.JSONFormatter))
+	logrus.SetFormatter(new(logrus.TextFormatter))
 
+	// Initialising viper config
 	if err := initConfig(); err != nil {
-		logrus.Fatalf("error initializing a config: %s", err.Error())
+		logrus.WithError(err).Fatal("Error initializing a config")
 	}
 
+	// Loading .env variables
 	if err := godotenv.Load(); err != nil {
-		logrus.Fatalf("error loading env variables: %s", err.Error())
+		logrus.WithError(err).Fatal("Error loading env variables")
 	}
 
-	// Connecting to postgres DB
+	// Establishing database connection
 	db, err := repository.NewPostgresDB(types.DBConfig{
 		Host:     viper.GetString("db.host"),
 		Port:     viper.GetString("db.port"),
@@ -35,9 +34,11 @@ func main() {
 		Password: os.Getenv("DB_PASSWORD"),
 	})
 	if err != nil {
-		logrus.Fatalf("failed to initialize db: %s", err.Error())
+		logrus.WithError(err).Fatal("Failed to initialize db")
 	}
-	fmt.Println(db)
+
+	defer db.Close()
+
 }
 
 func initConfig() error {
