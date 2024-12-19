@@ -25,3 +25,7 @@ go.sum
 
 # env file
 .env
+
+# Binaries 
+main
+server

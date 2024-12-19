@@ -2,7 +2,7 @@ package main
 
 import (
 	"os"
-	"socket_chat_backend/repository"
+	"socket_chat_backend/pkg/repository"
 	"socket_chat_backend/types"
 
 	"github.com/joho/godotenv"

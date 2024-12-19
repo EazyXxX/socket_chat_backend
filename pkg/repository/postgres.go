@@ -10,6 +10,10 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
+const (
+	usersTable = "users"
+)
+
 func NewPostgresDB(cfg types.DBConfig) (*sqlx.DB, error) {
 	// Creating a database connection
 	connStr := fmt.Sprintf("user=%s password=%s dbname=%s host=%s port=%s sslmode=%s",
