@@ -1,0 +1,25 @@
+version: '3.9'
+
+services:
+  socket_chat:
+    build: ./
+    command: ./wait-for-postgres.sh db ./socket_server
+    ports:
+      - 8000:8000
+    depends_on:
+      - db
+    environment:
+      - DB_PASSWORD=${DB_PASSWORD}
+
+  db:
+    restart: always
+    image: postgres:latest
+    volumes:
+    - ./.database/postgres/data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=postgres
+    ports:
+      - 6000:5432
+      
