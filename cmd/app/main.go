@@ -42,6 +42,8 @@ func main() {
 	// repos := repository.NewRepository(db)
 	// services := service.NewService(repos)
 	// handlers := handler.NewHandler(services)
+
+	// Then comes server initialising
 }
 
 func initConfig() error {
