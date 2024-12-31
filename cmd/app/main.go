@@ -40,7 +40,8 @@ func main() {
 	defer db.Close()
 
 	// repos := repository.NewRepository(db)
-
+	// services := service.NewService(repos)
+	// handlers := handler.NewHandler(services)
 }
 
 func initConfig() error {
