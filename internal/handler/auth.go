@@ -15,7 +15,6 @@ type signInInput struct {
 func (h *Handler) signUp(c *gin.Context) {
 	var input types.User
 
-	//Что делает BindJSON и зачем он нужен?
 	if err := c.BindJSON(&input); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, "invalid input body")
 		return
@@ -27,7 +26,6 @@ func (h *Handler) signUp(c *gin.Context) {
 		return
 	}
 
-	//Зачем здесь interface{}? что это за синтаксис такой?
 	c.JSON(http.StatusOK, map[string]interface{}{
 		"id": id,
 	})
