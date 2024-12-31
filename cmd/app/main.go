@@ -1,9 +1,16 @@
 package main
 
 import (
+	"context"
+	"os"
+	"os/signal"
+	"socket_chat_backend/internal/delivery/httpServer"
+	"socket_chat_backend/internal/handler"
 	"socket_chat_backend/internal/repository"
+	"socket_chat_backend/internal/service"
 	env "socket_chat_backend/pkg/environment"
 	"socket_chat_backend/types"
+	"syscall"
 
 	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
@@ -37,13 +44,35 @@ func main() {
 		logrus.WithError(err).Fatal("Failed to initialize db")
 	}
 
-	defer db.Close()
+	repos := repository.NewRepository(db)
+	services := service.NewService(repos)
+	handlers := handler.NewHandler(services)
 
-	// repos := repository.NewRepository(db)
-	// services := service.NewService(repos)
-	// handlers := handler.NewHandler(services)
+	// Server initialising
+	srv := new(httpServer.Server)
 
-	// Then comes server initialising
+	go func() {
+		if err := srv.Run(viper.GetString("port"), handlers.InitRoutes()); err != nil {
+			logrus.WithError(err).Fatal("Error occured while running http server")
+		}
+	}()
+
+	logrus.Info("socket_chat is started")
+
+	// Graceful shutdown
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)
+	<-quit
+
+	logrus.Info("socket_chat is shutting down")
+
+	if err := srv.Shutdown(context.Background()); err != nil {
+		logrus.WithError(err).Fatal("Error occured on server shutting down")
+	}
+
+	if err := db.Close(); err != nil {
+		logrus.WithError(err).Fatal("Error occured on database connection close")
+	}
 }
 
 func initConfig() error {
