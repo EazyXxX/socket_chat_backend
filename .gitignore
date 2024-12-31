@@ -25,3 +25,8 @@ go.sum
 
 # env file
 .env
+
+# Binaries 
+main
+server
+socket_server
